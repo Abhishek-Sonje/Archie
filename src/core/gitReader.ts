@@ -49,7 +49,7 @@ async function getFilesForCommit(
     hash,
   ]);
 
-  console.log("diff-tree raw:", JSON.stringify(raw));
+//   console.log("diff-tree raw:", JSON.stringify(raw));
 
   return parseNameStatus(raw);
 }
