@@ -1,7 +1,11 @@
 import { simpleGit } from "simple-git";
 import * as fs from "fs";
 import * as path from "path";
-import type { FileNode, FilesChanged } from "../types/index.js";
+import type {
+  FileNode,
+  FilesChanged,
+} from "../types/index.js";
+import { buildDependencyGraph } from "./dependencyGraph.js";
 
 const MAX_TOTAL_BYTES = 3_000_000;
 
@@ -181,16 +185,12 @@ export function treeToFlatPaths(nodes: DirectoryTree[], prefix = ""): string[] {
 // EXPORTS //
 
 export interface RepoStructureResult {
-  /** Nested tree — good for programmatic use */
   tree: DirectoryTree[];
 
-  /** Compact indented string — best for pasting into Gemini/Claude prompts */
   treeString: string;
 
-  /** Flat file paths — useful for referencing specific files */
   flatPaths: string[];
 
-  /** Stats about the structure */
   stats: {
     totalFiles: number;
     totalDirectories: number;
@@ -290,40 +290,40 @@ export async function readProjectIdentityFiles(
     // DevOps
     "Dockerfile",
     "docker-compose.yml",
-    ];
-    
-    const IDENTITY_FILES_GLOB = [
-      "vite.config", // check .ts and .js variants
-      "next.config",
-    ];
+  ];
+
+  const IDENTITY_FILES_GLOB = [
+    "vite.config", // check .ts and .js variants
+    "next.config",
+  ];
 
   const files: FileNode[] = [];
   for (const fileName of IDENTITY_FILES) {
     const filePath = path.join(repoPath, fileName);
     if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, "utf-8");
+      const fileContent = await fs.promises.readFile(filePath, "utf-8");
       files.push({
         path: fileName,
         content: fileContent,
-        sizeInBytes: fileContent.length,
+        sizeInBytes: Buffer.byteLength(fileContent),
       });
     }
-    }
-    
-    for (const base of IDENTITY_FILES_GLOB) {
-      for (const ext of [".ts", ".js", ".mjs", ".cjs"]) {
-        const filePath = path.join(repoPath, `${base}${ext}`);
-        if (fs.existsSync(filePath)) {
-           const fileContent = fs.readFileSync(filePath, "utf-8");
-           files.push({
-             path: base + ext,
-             content: fileContent,
-             sizeInBytes: fileContent.length,
-           });
-          break; // only need one variant
-        }
+  }
+
+  for (const base of IDENTITY_FILES_GLOB) {
+    for (const ext of [".ts", ".js", ".mjs", ".cjs"]) {
+      const filePath = path.join(repoPath, `${base}${ext}`);
+      if (fs.existsSync(filePath)) {
+        const fileContent = await fs.promises.readFile(filePath, "utf-8");
+        files.push({
+          path: base + ext,
+          content: fileContent,
+          sizeInBytes: Buffer.byteLength(fileContent),
+        });
+        break; // only need one variant
       }
     }
+  }
   return files;
 }
 
@@ -368,7 +368,7 @@ export async function readAllSourceFiles(
       files.push({
         path: flatPath,
         content: fileContent,
-        sizeInBytes: fileContent.length,
+        sizeInBytes: Buffer.byteLength(fileContent),
       });
     }
   }
@@ -381,21 +381,68 @@ export async function readChangedFiles(
 ): Promise<FileNode[]> {
   const allChanged = [...files.added, ...files.modified];
 
-    const result: FileNode[] = [];
+  const result: FileNode[] = [];
+  for (const file of allChanged) {
+    const filePath = path.join(repoPath, file);
     try {
-        for (const file of allChanged) {
-            const filePath = path.join(repoPath, file);
-            const fileContent = await fs.promises.readFile(filePath, "utf-8");
-            result.push({
-                path: file,
-                content: fileContent,
-                sizeInBytes: fileContent.length,
-            });
-    
-        }
+      const fileContent = await fs.promises.readFile(filePath, "utf-8");
+      result.push({
+        path: file,
+        content: fileContent,
+        sizeInBytes: Buffer.byteLength(fileContent),
+      });
     } catch (err) {
-        console.error("Error reading changed files:", err);
+      console.error("Error reading changed files:", err);
+    }
     }
   return result;
 }
 
+export async function readNeighborFiles(
+  changedFiles: FilesChanged,
+  allSourceFiles: FileNode[],
+): Promise<FileNode[]> {
+  // Build the graph once
+  const graph = buildDependencyGraph(allSourceFiles);
+
+  // Collect all changed file paths
+  const changedPaths = new Set([
+    ...changedFiles.added,
+    ...changedFiles.modified,
+  ]);
+
+  // Find neighbors — one hop in either direction
+  const neighborPaths = new Set<string>();
+
+  for (const changedPath of changedPaths) {
+    const node = graph.get(changedPath);
+    if (!node) continue;
+
+    // Files this changed file imports
+    for (const imp of node.imports) {
+      if (!changedPaths.has(imp)) {
+        // don't add files already in changed set
+        neighborPaths.add(imp);
+      }
+    }
+
+    // Files that import this changed file
+    for (const dep of node.importedBy) {
+      if (!changedPaths.has(dep)) {
+        neighborPaths.add(dep);
+      }
+    }
+  }
+
+  // Return FileNodes for all neighbors
+  const neighborFiles: FileNode[] = [];
+
+  for (const neighborPath of neighborPaths) {
+    const fileNode = allSourceFiles.find((f) => f.path === neighborPath);
+    if (fileNode) {
+      neighborFiles.push(fileNode);
+    }
+  }
+
+  return neighborFiles;
+}

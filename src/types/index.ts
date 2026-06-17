@@ -38,6 +38,14 @@ export interface FileNode {
   sizeInBytes: number;
 }
 
+export interface DependencyGraphNode {
+  path: string;
+  imports: string[];
+  importedBy: string[];
+}
+ 
+export type DependencyGraph = Map<string, DependencyGraphNode>;
+
 export interface RepoSnapshot {
   mode: ReadMode;
   repoPath: string;
