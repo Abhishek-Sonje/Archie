@@ -49,12 +49,12 @@ async function getFilesForCommit(
     hash,
   ]);
 
-//   console.log("diff-tree raw:", JSON.stringify(raw));
+  //   console.log("diff-tree raw:", JSON.stringify(raw));
 
   return parseNameStatus(raw);
 }
 
-async function batchedPromiseAll<T>(
+async function batchedPromiseAllgit<T>(
   items: readonly T[],
   fn: (item: T) => Promise<unknown>,
   batchSize = 10,
@@ -68,7 +68,7 @@ async function batchedPromiseAll<T>(
   return results;
 }
 
-// EXPORT // 
+// EXPORT //
 
 export async function getCurrentHash(repoPath: string): Promise<string> {
   try {

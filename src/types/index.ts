@@ -43,7 +43,7 @@ export interface DependencyGraphNode {
   imports: string[];
   importedBy: string[];
 }
- 
+
 export type DependencyGraph = Map<string, DependencyGraphNode>;
 
 export interface RepoSnapshot {
@@ -76,4 +76,20 @@ export interface ArchieConfig {
   neverChange: string | null; // sections Archie must not overwrite
   stackContext: string | null; // extra context about internal tools
   raw: string; // full raw content — passed to Gemini as-is
+}
+
+export interface GeminiGenerateInput {
+  userConfig: string | null;
+  identityFiles: FileNode[];
+  treeString: string;
+  sourceFiles: FileNode[];
+  gitHistory: ProcessedCommit[];
+}
+
+export interface GeminiUpdateInput {
+  userConfig: string | null;
+  existingArchitecture: string;
+  commitRange: CommitRange;
+  changedFiles: FileNode[];
+  neighborFiles: FileNode[];
 }
