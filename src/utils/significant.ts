@@ -1,4 +1,3 @@
-// src/utils/significant.ts
 import type { CommitRange, ArchieState } from "../types/index.js";
 
 export default function isSignificant(
@@ -13,9 +12,11 @@ export default function isSignificant(
     return false;
   }
 
-  const allChangedFiles = commitRange.commits.flatMap(
-    (commit) => commit.filesChanged,
-  );
+  const allChangedFiles = commitRange.commits.flatMap((commit) => [
+    ...commit.filesChanged.added,
+    ...commit.filesChanged.modified,
+    ...commit.filesChanged.deleted,
+  ]);
 
   const uniqueChangedFiles = [...new Set(allChangedFiles)];
 
