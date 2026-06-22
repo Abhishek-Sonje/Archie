@@ -20,6 +20,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@clack/prompts": "^1.6.0",
     "@google/generative-ai": "^0.24.1",
     "commander": "^15.0.0",
     "simple-git": "^3.36.0"

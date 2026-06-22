@@ -66,3 +66,19 @@ export async function initializeState(
   await writeState(repoPath, state);
   return state;
 }
+
+export async function updateState(
+  repoPath: string,
+  newCommitHash: string,
+): Promise<void> {
+  const existing = await readState(repoPath)
+  if (!existing) throw new Error('No state found. Run archie init first.')
+  
+  await writeState(repoPath, {
+    ...existing,
+    lastProcessedCommit: newCommitHash,
+    lastUpdated: new Date().toISOString(),
+    totalRuns: existing.totalRuns + 1,
+  })
+}
+

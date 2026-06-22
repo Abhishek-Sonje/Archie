@@ -2,13 +2,13 @@ export type ReadMode = "full" | "incremental";
 
 export interface FileReaderOptions {
   mode: ReadMode;
-  changedFiles?: string[]; // only used in incremental mode
+  changedFiles?: string[];
   repoPath: string;
 }
 
 export interface ArchieState {
   lastProcessedCommit: string;
-  lastUpdated: string; // ISO date string
+  lastUpdated: string;
   totalRuns: number;
   initialized: boolean;
 }
@@ -22,7 +22,7 @@ export interface CommitRange {
 export interface ProcessedCommit {
   hash: string;
   message: string;
-  timestamp: string; // ISO date string
+  timestamp: string;
   filesChanged: FilesChanged;
 }
 
@@ -46,40 +46,17 @@ export interface DependencyGraphNode {
 
 export type DependencyGraph = Map<string, DependencyGraphNode>;
 
-export interface RepoSnapshot {
-  mode: ReadMode;
-  repoPath: string;
-  directoryTree: string;
-  identityFile: FileNode[]; //Package.json, tsconfig.json, etc
-  sourceFile: FileNode[];
-  totalFiles: number;
-  estimatedToken: number;
-}
-
-export interface GeminiInput {
-  mode: "generate" | "update";
-  repoSnapshot: RepoSnapshot;
-  gitHistory: ProcessedCommit[];
-  userConfig: string | null;
-  existingArchitecture: string | null;
-}
-
-export interface GeminiOutput {
-  tokenUsed: number;
-  content: string;
-}
-
 export interface ArchieConfig {
   projectDescription: string | null;
   keyDecisions: string | null;
   thingsToTrack: string | null;
-  neverChange: string | null; // sections Archie must not overwrite
-  stackContext: string | null; // extra context about internal tools
-  raw: string; // full raw content — passed to Gemini as-is
+  neverChange: string | null;
+  stackContext: string | null;
+  raw: string;
 }
 
 export interface GeminiGenerateInput {
-  userConfig: string | null;
+  userConfig: string | null; 
   identityFiles: FileNode[];
   treeString: string;
   sourceFiles: FileNode[];
@@ -87,7 +64,7 @@ export interface GeminiGenerateInput {
 }
 
 export interface GeminiUpdateInput {
-  userConfig: string | null;
+  userConfig: string | null; 
   existingArchitecture: string;
   commitRange: CommitRange;
   changedFiles: FileNode[];
