@@ -1,29 +1,23 @@
-import { confirm, intro, outro, spinner, note, log } from "@clack/prompts";
+import { intro, outro, spinner, note, log } from "@clack/prompts";
 import path from "path";
 import fs from "fs";
 import {
   getChangedFilesInRange,
   getCommitRange,
   getCurrentHash,
-  getRecentHistory,
 } from "../core/gitReader.js";
 import { readConfigFile, createConfigTemplate } from "../utils/config.js";
 import {
-  readProjectIdentityFiles,
   readAllSourceFiles,
-  getStructurePromptBlock,
   readNeighborFiles,
   readChangedFiles,
 } from "../core/fileReader.js";
-import { generateArchitecture, updateArchitecture } from "../core/gemini.js";
+import { updateArchitecture } from "../core/gemini.js";
 import { readExistingArchitecture, writeArchitecture } from "../core/writer.js";
 import {
-  initializeState,
   readState,
   updateState,
-  writeState,
 } from "../utils/state.js";
-import type { ArchieConfig, FileNode } from "../types/index.js";
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {

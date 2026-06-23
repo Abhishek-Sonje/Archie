@@ -1,56 +1,50 @@
-import {
-  getCurrentHash,
-  getRecentHistory,
-  getCommitRange,
-  getChangedFilesInRange,
-} from "./core/gitReader.js";
+import { Command } from "commander";
+import { init } from "./commands/init.js";
+import { update } from "./commands/update.js";
+import { installHook, runHook } from "./commands/hook.js";
 
-import {getRepoStructure, readAllSourceFiles, } from "./core/fileReader.js";
+function main() {
+  const program = new Command();
 
-async function main() {
-  // Path to ANY git repo you want to test against
-  const repoPath = "."; // test against this project itself
+  program
+    .name("archie")
+    .description(
+      "Auto-generates and maintains ARCHITECTURE.md for any codebase.",
+    )
+    .version("1.0.0");
 
-  console.log("\n🔹 Current HEAD:");
-  const head = await getCurrentHash(repoPath);
-  console.log(head);
+  program
+    .command("init")
+    .description("Initialize Archie and generate ARCHITECTURE.md")
+    .action(async () => {
+      await init(process.cwd());
+    });
 
-  console.log("\n🔹 Recent commits:");
-  const history = await getRecentHistory(repoPath, 5);
-  console.dir(history, { depth: null });
+  program
+    .command("update")
+    .description("Manually refresh ARCHITECTURE.md")
+    .action(async () => {
+      await update(process.cwd());
+    });
 
-  if (history.length >= 2) {
-    console.log("\n🔹 Commit range diff:");
-    const range = await getCommitRange(
-      repoPath,
-      history[1].hash,
-      history[0].hash,
-    ); 
+  program
+    .command("hook")
+    .description("Install git post-commit hook for auto-updates")
+    .action(async () => {
+      await installHook(process.cwd());
+    });
 
-    console.dir(range, { depth: null });
+  program
+    .command("run-hook", { hidden: true })
+    .description("Internal: called by git post-commit hook")
+    .action(async () => {
+      await runHook(process.cwd());
+    });
 
-    console.log("\n🔹 Net changed files:");
-    const net = getChangedFilesInRange(range);
-    console.log(net);
-  }
-
-  // File Reader functions
-
-  getRepoStructure(repoPath).then((structure) => {
-    console.log("\n🔹 Repo structure:");
-    console.dir(structure, { depth: null });
+  program.parseAsync(process.argv).catch((err) => {
+    console.error("Unexpected error:", err.message);
+    process.exit(1);
   });
-
-  const file = readAllSourceFiles(repoPath).then((files) => {
-    console.log("\n🔹 Source files:");
-    console.dir(files, { depth: null });
-  });
-
 }
 
-
-
-main().catch((err) => {
-  console.error("❌ Test failed:", err);
-  process.exit(1);
-});
+main();
