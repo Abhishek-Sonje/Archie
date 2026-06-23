@@ -1,0 +1,9 @@
+src
+node_modules
+.env
+.git
+.github
+*.log
+tsconfig.json
+ARCHITECTURE.md
+archie.config.md

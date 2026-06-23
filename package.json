@@ -1,5 +1,5 @@
 {
-  "name": "archie",
+  "name": "archie-ai",
   "version": "1.0.0",
   "description": "CLI tool that automatically generates and maintains an ARCHITECTURE.md file for any code repository.",
   "license": "ISC",
