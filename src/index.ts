@@ -1,7 +1,12 @@
+#!/usr/bin/env node
+
 import { Command } from "commander";
 import { init } from "./commands/init.js";
 import { update } from "./commands/update.js";
 import { installHook, runHook } from "./commands/hook.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 function main() {
   const program = new Command();

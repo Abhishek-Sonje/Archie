@@ -123,6 +123,7 @@ function cleanMarkdownResponse(text: string): string {
 
 function getModel() {
   const apiKey = process.env.GEMINI_API_KEY;
+  console.log("Using Gemini model for ARCHITECTURE.md generation", apiKey ? "" : "(GEMINI_API_KEY not set, will fail)");
   if (!apiKey) {
     throw new Error(
       "GEMINI_API_KEY not found.\n" +
@@ -131,7 +132,7 @@ function getModel() {
     );
   }
   const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+  return genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 }
 
 async function callGemini(prompt: string): Promise<string> {

@@ -6,6 +6,9 @@
   "author": "Abhishek",
   "type": "module",
   "main": "index.js",
+  "bin": {
+    "archie": "./dist/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -23,6 +26,7 @@
     "@clack/prompts": "^1.6.0",
     "@google/generative-ai": "^0.24.1",
     "commander": "^15.0.0",
+    "dotenv": "^17.4.2",
     "simple-git": "^3.36.0"
   }
 }
