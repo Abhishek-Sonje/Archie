@@ -1,6 +1,6 @@
 # Architecture
 ## What This Project Does
-Archie is a Node.js CLI tool, `archie-cli`, designed to automatically generate and maintain an `ARCHITECTURE.md` file within any Git repository. It addresses the common problem of architecture documentation becoming stale by leveraging the Gemini 2.5 Flash API to read codebases, analyze Git history, and produce structured documentation that updates automatically. The tool is primarily for solo developers and small teams who use AI coding assistants and need up-to-date project context.
+Archie is a Node.js CLI tool, `archie-ai`, designed to automatically generate and maintain an `ARCHITECTURE.md` file within any Git repository. It addresses the common problem of architecture documentation becoming stale by leveraging the Gemini 2.5 Flash API to read codebases, analyze Git history, and produce structured documentation that updates automatically. The tool is primarily for solo developers and small teams who use AI coding assistants and need up-to-date project context.
 
 ## Tech Stack
 *   **Node.js**: As a CLI tool, Archie runs on Node.js, enabling file system access, Git interactions, and network requests to the Gemini API.

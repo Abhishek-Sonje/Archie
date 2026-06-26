@@ -21,7 +21,7 @@ Archie makes your Git history the source of truth. It generates docs from your a
 Requires Node.js v18+ and a [Gemini API key](https://aistudio.google.com/app/apikey) (free tier works).
 
 ```bash
-npm install -g archie-cli
+npm install -g archie-ai
 ```
 
 ---

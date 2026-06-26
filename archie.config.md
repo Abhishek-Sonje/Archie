@@ -6,7 +6,7 @@ Archie is a CLI tool that automatically generates and maintains an ARCHITECTURE.
 
 Target users are solo developers and small teams who use AI coding tools like Cursor or Claude Code and want their AI agent to have accurate, structured context about the project. Archie solves the problem that architecture documentation always goes stale because the maintenance burden is too high for humans — Archie makes the AI do the maintenance instead.
 
-This is V1. The goal is a working CLI that can be published to npm as archie-cli and used with npx archie init on any project.
+This is V1. The goal is a working CLI that can be published to npm as archie-ai and used with npx archie init on any project.
 
 ## Key Decisions
 
